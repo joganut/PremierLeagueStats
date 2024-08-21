@@ -1,7 +1,6 @@
 # Premier League Stats App
 
-⚽ **Premier League Stats - 2024** is a Streamlit web application that provides an interactive platform to view and analyze Premier League team and player statistics. It includes features for exploring team stats, player stats, and predictions.
-
+⚽ **Premier League Stats - 2024** is a Streamlit web application that provides an interactive platform to view and analyze Premier League team and player statistics. It includes features for exploring team stats, player stats.
 ## Features
 
 - **Team Stats**: View the current Premier League table, search teams, and visualize top-performing teams.
