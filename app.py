@@ -45,13 +45,13 @@ def add_custom_css():
     """, unsafe_allow_html=True)
 
 @st.cache_data
-def fetch_english_premier_league_data():
+def fetch_epl_data():
     url = "https://www.bbc.com/sport/football/premier-league/table"
     try:
         response = requests.get(url)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching English Premier League data: {e}")
+        logging.error(f"Error fetching EPL data: {e}")
         st.error(f"🚨 Error fetching data: {e}")
         return pd.DataFrame()
 
@@ -59,7 +59,7 @@ def fetch_english_premier_league_data():
     table = soup.find('table')
 
     if table is None:
-        st.error("🚫 Could not find the English Premier League table on the page.")
+        st.error("🚫 Could not find the EPL table on the page.")
         return pd.DataFrame()
 
     headers = [header.text for header in table.find_all('th')]
@@ -135,15 +135,15 @@ def plot_player_scoring(df):
 
 def main():
     add_custom_css()
-    st.markdown('<div class="title">⚽ English Premier League Stats - 2024</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">⚽ EPL Stats - 2024</div>', unsafe_allow_html=True)
 
     # Sidebar for navigation
     option = st.sidebar.selectbox("Choose a view", ["🏆 Team Stats", "🎯 Player Stats"])
 
     if option == "🏆 Team Stats":
-        df = fetch_english_premier_league_data()
+        df = fetch_epl_data()
         if not df.empty:
-            st.markdown('<div class="subheader">English Premier League Table - 2024</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subheader">EPL Table - 2024</div>', unsafe_allow_html=True)
             search_term = st.text_input("🔍 Search the table", "")
             if search_term:
                 search_term = search_term.lower()
