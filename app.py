@@ -2,8 +2,6 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import altair as alt
-import re
 import logging
 
 # Configure logging
@@ -129,6 +127,11 @@ def fetch_fixtures():
     soup = BeautifulSoup(response.content, 'html.parser')
     fixtures = soup.find_all('div', class_='qa-match-block')
 
+    if not fixtures:
+        logging.error("No fixtures found on the page.")
+        st.error("🚫 Could not find any fixtures on the page.")
+        return pd.DataFrame()
+
     fixtures_data = []
     for fixture in fixtures:
         date = fixture.find('h3').text.strip()
@@ -142,6 +145,7 @@ def fetch_fixtures():
                 fixtures_data.append([date, home_team, away_team, time])
 
     df = pd.DataFrame(fixtures_data, columns=['Date', 'Home Team', 'Away Team', 'Time'])
+    logging.info(f"Fetched fixtures data: {df.head()}")
     return df
 
 def main():
