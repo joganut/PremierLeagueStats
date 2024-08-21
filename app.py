@@ -153,7 +153,7 @@ def main():
             if 'Points' in df.columns:
                 df['Points'] = pd.to_numeric(df['Points'], errors='coerce')
                 top_5_teams = df.nlargest(5, 'Points')[['Team', 'Points']]
-                st.markdown('<div class="subheader">🏅 Top 5 Teams - 2024</div>', unsafe_allow_html=True)
+                st.markdown('<div class="subheader">🏅 Top 5 Teams </div>', unsafe_allow_html=True)
                 st.table(top_5_teams)
 
                 chart = alt.Chart(top_5_teams).mark_bar().encode(
@@ -161,13 +161,13 @@ def main():
                     y='Points',
                     color='Team'
                 ).properties(
-                    title='📊 Top 5 Teams by Points - 2024'
+                    title='📊 Top 5 Teams by Points'
                 ).interactive()
                 st.altair_chart(chart, use_container_width=True)
 
                 if 'Goals For' in df.columns and 'Goals Against' in df.columns:
                     performance = df[['Team', 'Goals For', 'Goals Against']]
-                    st.markdown('<div class="subheader">⚽ Goals Scored vs. Goals Conceded - 2024</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="subheader">⚽ Goals Scored vs. Goals Conceded</div>', unsafe_allow_html=True)
                     goals_scored_chart = alt.Chart(performance).mark_bar().encode(
                         x='Team',
                         y='Goals For',
@@ -195,7 +195,7 @@ def main():
             if 'Goals' in player_df.columns:
                 player_df['Goals'] = pd.to_numeric(player_df['Goals'], errors='coerce')
                 top_scorers = player_df.nlargest(5, 'Goals')[['Name', 'Goals']]
-                st.markdown('<div class="subheader">🏆 Top 5 Scorers - 2024</div>', unsafe_allow_html=True)
+                st.markdown('<div class="subheader">🏆 Top 5 Scorers</div>', unsafe_allow_html=True)
                 st.table(top_scorers)
 
                 chart = alt.Chart(top_scorers).mark_bar().encode(
@@ -203,21 +203,21 @@ def main():
                     y='Goals',
                     color='Name'
                 ).properties(
-                    title='📊 Top 5 Scorers by Goals - 2024'
+                    title='📊 Top 5 Scorers by Goals'
                 ).interactive()
                 st.altair_chart(chart, use_container_width=True)
 
                 if 'Assists' in player_df.columns:
                     player_df['Assists'] = pd.to_numeric(player_df['Assists'], errors='coerce')
                     comparison = player_df[['Name', 'Goals', 'Assists']]
-                    st.markdown('<div class="subheader">🎯 Goals vs Assists - 2024</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="subheader">🎯 Goals vs Assists</div>', unsafe_allow_html=True)
                     
                     goals_chart = alt.Chart(comparison).mark_bar().encode(
                         x='Name',
                         y='Goals',
                         color='Name'
                     ).properties(
-                        title='📊 Goals - 2024'
+                        title='📊 Goals'
                     ).interactive()
                     st.altair_chart(goals_chart, use_container_width=True)
 
@@ -226,7 +226,7 @@ def main():
                         y='Assists',
                         color='Name'
                     ).properties(
-                        title='📊 Assists - 2024'
+                        title='📊 Assists'
                     ).interactive()
                     st.altair_chart(assists_chart, use_container_width=True)
 
