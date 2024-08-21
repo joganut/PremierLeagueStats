@@ -15,18 +15,19 @@ def add_custom_css():
         body {
             background-color: #f7f9fc;
             font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
         }
         .title {
-            font-size: 3em;
+            font-size: 2.5em;
             color: #1e90ff;  /* Dodger Blue */
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .subheader {
-            font-size: 2em;
+            font-size: 1.8em;
             color: #ff6347;  /* Tomato */
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         .dataframe {
             font-family: 'Courier New', Courier, monospace;
@@ -34,12 +35,21 @@ def add_custom_css():
         .stButton>button {
             background-color: #1e90ff;
             color: white;
-            font-size: 1.2em;
+            font-size: 1em;
             border-radius: 5px;
-            padding: 10px 20px;
+            padding: 8px 16px;
         }
         .stSelectbox {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+        @media (max-width: 600px) {
+            .title, .subheader {
+                font-size: 1.5em;
+            }
+            .stButton>button {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
         }
         </style>
     """, unsafe_allow_html=True)
