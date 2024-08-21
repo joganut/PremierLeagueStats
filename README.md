@@ -6,7 +6,6 @@
 
 - **Team Stats**: View the current Premier League table, search teams, and visualize top-performing teams.
 - **Player Stats**: Analyze player statistics, including top scorers and assists.
-- **Predictions**: Get predicted performance and scoring data for teams and players.
 
 ## Requirements
 
