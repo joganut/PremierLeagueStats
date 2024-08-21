@@ -113,14 +113,6 @@ def fetch_player_data():
     df.drop_duplicates(inplace=True)  # Remove duplicate rows
     return df
 
-def predict_team_performance(df):
-    # Placeholder for actual prediction logic
-    return df[['Team', 'Points']].copy()
-
-def predict_player_scoring(df):
-    # Placeholder for actual prediction logic
-    return df[['Name', 'Goals']].copy()
-
 def plot_team_performance(df):
     chart = alt.Chart(df).mark_bar().encode(
         x='Team',
@@ -146,7 +138,7 @@ def main():
     st.markdown('<div class="title">⚽ Premier League Stats - 2024</div>', unsafe_allow_html=True)
 
     # Sidebar for navigation
-    option = st.sidebar.selectbox("Choose a view", ["🏆 Team Stats", "🎯 Player Stats", "🔮 Predictions"])
+    option = st.sidebar.selectbox("Choose a view", ["🏆 Team Stats", "🎯 Player Stats"])
 
     if option == "🏆 Team Stats":
         df = fetch_premier_league_data()
@@ -237,23 +229,6 @@ def main():
                         title='📊 Assists - 2024'
                     ).interactive()
                     st.altair_chart(assists_chart, use_container_width=True)
-
-    elif option == "🔮 Predictions":
-        prediction_option = st.sidebar.selectbox("Choose a prediction", ["📈 Team Performance", "🔮 Player Scoring"])
-        
-        if prediction_option == "📈 Team Performance":
-            team_df = fetch_premier_league_data()
-            if not team_df.empty:
-                predicted_performance = predict_team_performance(team_df)
-                st.markdown('<div class="subheader">📈 Team Performance Prediction</div>', unsafe_allow_html=True)
-                st.altair_chart(plot_team_performance(predicted_performance), use_container_width=True)
-
-        elif prediction_option == "🔮 Player Scoring":
-            player_df = fetch_player_data()
-            if not player_df.empty:
-                predicted_scoring = predict_player_scoring(player_df)
-                st.markdown('<div class="subheader">🔮 Player Scoring Prediction</div>', unsafe_allow_html=True)
-                st.altair_chart(plot_player_scoring(predicted_scoring), use_container_width=True)
 
 if __name__ == "__main__":
     main()
