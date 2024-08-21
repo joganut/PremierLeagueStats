@@ -72,9 +72,7 @@ def fetch_epl_data():
         table_data.append(cols)
 
     df = pd.DataFrame(table_data, columns=headers)
-    if not df.empty:
-        df = df.iloc[:, :-1]  # Remove the last column
-    return df
+    return df.iloc[:, :-1] if not df.empty else df  # Remove the last column if data exists
 
 @st.cache_data
 def fetch_player_data():
@@ -113,122 +111,193 @@ def fetch_player_data():
     df.drop_duplicates(inplace=True)  # Remove duplicate rows
     return df
 
-def plot_team_performance(df):
-    chart = alt.Chart(df).mark_bar().encode(
-        x='Team',
-        y='Points',
-        color='Team'
-    ).properties(
-        title='📊 Predicted Team Performance'
-    ).interactive()
-    return chart
+def display_team_stats(df):
+    st.markdown('<div class="subheader">EPL Table</div>', unsafe_allow_html=True)
+    search_term = st.text_input("🔍 Search the table", "")
+    if search_term:
+        search_term = search_term.lower()
+        df = df[df.apply(lambda row: row.astype(str).str.lower().str.contains(search_term).any(), axis=1)]
+    st.dataframe(df, use_container_width=True)
+    
+    if 'Points' in df.columns:
+        df['Points'] = pd.to_numeric(df['Points'], errors='coerce')
+        top_5_teams = df.nlargest(5, 'Points')[['Team', 'Points']]
+        st.markdown('<div class="subheader">🏅 Top 5 Teams </div>', unsafe_allow_html=True)
+        st.table(top_5_teams)
 
-def plot_player_scoring(df):
-    chart = alt.Chart(df).mark_bar().encode(
-        x='Name',
-        y='Goals',
-        color='Name'
-    ).properties(
-        title='📊 Predicted Player Scoring'
-    ).interactive()
-    return chart
+        chart = alt.Chart(top_5_teams).mark_bar().encode(
+            x='Team',
+            y='Points',
+            color='Team'
+        ).properties(
+            title='📊 Top 5 Teams by Points'
+        ).interactive()
+        st.altair_chart(chart, use_container_width=True)
+
+        if 'Goals For' in df.columns and 'Goals Against' in df.columns:
+            performance = df[['Team', 'Goals For', 'Goals Against']]
+            st.markdown('<div class="subheader">⚽ Goals Scored vs. Goals Conceded</div>', unsafe_allow_html=True)
+            goals_scored_chart = alt.Chart(performance).mark_bar().encode(
+                x='Team',
+                y='Goals For',
+                color='Team'
+            ).properties(
+                title='📊 Goals Scored'
+            ).interactive()
+            st.altair_chart(goals_scored_chart, use_container_width=True)
+
+            goals_conceded_chart = alt.Chart(performance).mark_bar().encode(
+                x='Team',
+                y='Goals Against',
+                color='Team'
+            ).properties(
+                title='📊 Goals Conceded'
+            ).interactive()
+            st.altair_chart(goals_conceded_chart, use_container_width=True)
+
+def display_player_stats(player_df):
+    st.markdown('<div class="subheader">👤 Player Stats </div>', unsafe_allow_html=True)
+    st.dataframe(player_df, use_container_width=True)
+
+    if 'Goals' in player_df.columns:
+        player_df['Goals'] = pd.to_numeric(player_df['Goals'], errors='coerce')
+        top_scorers = player_df.nlargest(5, 'Goals')[['Name', 'Goals']]
+        st.markdown('<div class="subheader">🏆 Top 5 Scorers</div>', unsafe_allow_html=True)
+        st.table(top_scorers)
+
+        chart = alt.Chart(top_scorers).mark_bar().encode(
+            x='Name',
+            y='Goals',
+            color='Name'
+        ).properties(
+            title='📊 Top 5 Scorers by Goals'
+        ).interactive()
+        st.altair_chart(chart, use_container_width=True)
+
+        if 'Assists' in player_df.columns:
+            player_df['Assists'] = pd.to_numeric(player_df['Assists'], errors='coerce')
+            comparison = player_df[['Name', 'Goals', 'Assists']]
+            st.markdown('<div class="subheader">🎯 Goals vs Assists</div>', unsafe_allow_html=True)
+            
+            goals_chart = alt.Chart(comparison).mark_bar().encode(
+                x='Name',
+                y='Goals',
+                color='Name'
+            ).properties(
+                title='📊 Goals'
+            ).interactive()
+            st.altair_chart(goals_chart, use_container_width=True)
+
+            assists_chart = alt.Chart(comparison).mark_bar().encode(
+                x='Name',
+                y='Assists',
+                color='Name'
+            ).properties(
+                title='📊 Assists'
+            ).interactive()
+            st.altair_chart(assists_chart, use_container_width=True)
+
+def display_team_comparison(df):
+    st.markdown('<div class="subheader">Team Comparison</div>', unsafe_allow_html=True)
+    teams = df['Team'].unique().tolist()
+    selected_teams = st.multiselect("Select teams to compare", teams)
+
+    if selected_teams:
+        comparison_df = df[df['Team'].isin(selected_teams)]
+        st.dataframe(comparison_df, use_container_width=True)
+
+        if 'Points' in comparison_df.columns:
+            comparison_df['Points'] = pd.to_numeric(comparison_df['Points'], errors='coerce')
+            comparison_chart = alt.Chart(comparison_df).mark_bar().encode(
+                x='Team',
+                y='Points',
+                color='Team'
+            ).properties(
+                title='📊 Points Comparison'
+            ).interactive()
+            st.altair_chart(comparison_chart, use_container_width=True)
+
+            if 'Goals For' in comparison_df.columns and 'Goals Against' in comparison_df.columns:
+                goals_comparison = comparison_df[['Team', 'Goals For', 'Goals Against']]
+                st.markdown('<div class="subheader">⚽ Goals Scored vs. Goals Conceded</div>', unsafe_allow_html=True)
+                goals_for_chart = alt.Chart(goals_comparison).mark_bar().encode(
+                    x='Team',
+                    y='Goals For',
+                    color='Team'
+                ).properties(
+                    title='📊 Goals Scored'
+                ).interactive()
+                st.altair_chart(goals_for_chart, use_container_width=True)
+
+                goals_against_chart = alt.Chart(goals_comparison).mark_bar().encode(
+                    x='Team',
+                    y='Goals Against',
+                    color='Team'
+                ).properties(
+                    title='📊 Goals Conceded'
+                ).interactive()
+                st.altair_chart(goals_against_chart, use_container_width=True)
+
+def display_player_comparison(player_df):
+    st.markdown('<div class="subheader">Player Comparison</div>', unsafe_allow_html=True)
+    players = player_df['Name'].unique().tolist()
+    selected_players = st.multiselect("Select players to compare", players)
+
+    if selected_players:
+        comparison_df = player_df[player_df['Name'].isin(selected_players)]
+        st.dataframe(comparison_df, use_container_width=True)
+
+        if 'Goals' in comparison_df.columns:
+            comparison_df['Goals'] = pd.to_numeric(comparison_df['Goals'], errors='coerce')
+            goals_chart = alt.Chart(comparison_df).mark_bar().encode(
+                x='Name',
+                y='Goals',
+                color='Name'
+            ).properties(
+                title='📊 Goals Comparison'
+            ).interactive()
+            st.altair_chart(goals_chart, use_container_width=True)
+
+        if 'Assists' in comparison_df.columns:
+            comparison_df['Assists'] = pd.to_numeric(comparison_df['Assists'], errors='coerce')
+            assists_chart = alt.Chart(comparison_df).mark_bar().encode(
+                x='Name',
+                y='Assists',
+                color='Name'
+            ).properties(
+                title='📊 Assists Comparison'
+            ).interactive()
+            st.altair_chart(assists_chart, use_container_width=True)
 
 def main():
     add_custom_css()
-    st.markdown('<div class="title">⚽ EPL Stats - 2024</div>', unsafe_allow_html=True)
 
-    # Sidebar for navigation
-    option = st.sidebar.selectbox("Choose a view", ["🏆 Team Stats", "🎯 Player Stats"])
-
-    if option == "🏆 Team Stats":
+    st.markdown('<div class="title">⚽ EPL Team and Player Stats</div>', unsafe_allow_html=True)
+    
+    option = st.sidebar.selectbox(
+        "Choose an option",
+        ["📊 Team Stats", "👤 Player Stats", "⚖️ Team Comparison", "⚖️ Player Comparison"]
+    )
+    
+    if option == "📊 Team Stats":
         df = fetch_epl_data()
         if not df.empty:
-            st.markdown('<div class="subheader">EPL Table</div>', unsafe_allow_html=True)
-            search_term = st.text_input("🔍 Search the table", "")
-            if search_term:
-                search_term = search_term.lower()
-                df = df[df.apply(lambda row: row.astype(str).str.lower().str.contains(search_term).any(), axis=1)]
-            st.dataframe(df, use_container_width=True)
-            
-            if 'Points' in df.columns:
-                df['Points'] = pd.to_numeric(df['Points'], errors='coerce')
-                top_5_teams = df.nlargest(5, 'Points')[['Team', 'Points']]
-                st.markdown('<div class="subheader">🏅 Top 5 Teams </div>', unsafe_allow_html=True)
-                st.table(top_5_teams)
-
-                chart = alt.Chart(top_5_teams).mark_bar().encode(
-                    x='Team',
-                    y='Points',
-                    color='Team'
-                ).properties(
-                    title='📊 Top 5 Teams by Points'
-                ).interactive()
-                st.altair_chart(chart, use_container_width=True)
-
-                if 'Goals For' in df.columns and 'Goals Against' in df.columns:
-                    performance = df[['Team', 'Goals For', 'Goals Against']]
-                    st.markdown('<div class="subheader">⚽ Goals Scored vs. Goals Conceded</div>', unsafe_allow_html=True)
-                    goals_scored_chart = alt.Chart(performance).mark_bar().encode(
-                        x='Team',
-                        y='Goals For',
-                        color='Team'
-                    ).properties(
-                        title='📊 Goals Scored'
-                    ).interactive()
-                    st.altair_chart(goals_scored_chart, use_container_width=True)
-
-                    goals_conceded_chart = alt.Chart(performance).mark_bar().encode(
-                        x='Team',
-                        y='Goals Against',
-                        color='Team'
-                    ).properties(
-                        title='📊 Goals Conceded'
-                    ).interactive()
-                    st.altair_chart(goals_conceded_chart, use_container_width=True)
-
-    elif option == "🎯 Player Stats":
+            display_team_stats(df)
+    
+    elif option == "👤 Player Stats":
         player_df = fetch_player_data()
         if not player_df.empty:
-            st.markdown('<div class="subheader">👤 Player Stats </div>', unsafe_allow_html=True)
-            st.dataframe(player_df, use_container_width=True)
-
-            if 'Goals' in player_df.columns:
-                player_df['Goals'] = pd.to_numeric(player_df['Goals'], errors='coerce')
-                top_scorers = player_df.nlargest(5, 'Goals')[['Name', 'Goals']]
-                st.markdown('<div class="subheader">🏆 Top 5 Scorers</div>', unsafe_allow_html=True)
-                st.table(top_scorers)
-
-                chart = alt.Chart(top_scorers).mark_bar().encode(
-                    x='Name',
-                    y='Goals',
-                    color='Name'
-                ).properties(
-                    title='📊 Top 5 Scorers by Goals'
-                ).interactive()
-                st.altair_chart(chart, use_container_width=True)
-
-                if 'Assists' in player_df.columns:
-                    player_df['Assists'] = pd.to_numeric(player_df['Assists'], errors='coerce')
-                    comparison = player_df[['Name', 'Goals', 'Assists']]
-                    st.markdown('<div class="subheader">🎯 Goals vs Assists</div>', unsafe_allow_html=True)
-                    
-                    goals_chart = alt.Chart(comparison).mark_bar().encode(
-                        x='Name',
-                        y='Goals',
-                        color='Name'
-                    ).properties(
-                        title='📊 Goals'
-                    ).interactive()
-                    st.altair_chart(goals_chart, use_container_width=True)
-
-                    assists_chart = alt.Chart(comparison).mark_bar().encode(
-                        x='Name',
-                        y='Assists',
-                        color='Name'
-                    ).properties(
-                        title='📊 Assists'
-                    ).interactive()
-                    st.altair_chart(assists_chart, use_container_width=True)
+            display_player_stats(player_df)
+    
+    elif option == "⚖️ Team Comparison":
+        df = fetch_epl_data()
+        if not df.empty:
+            display_team_comparison(df)
+    
+    elif option == "⚖️ Player Comparison":
+        player_df = fetch_player_data()
+        if not player_df.empty:
+            display_player_comparison(player_df)
 
 if __name__ == "__main__":
     main()
