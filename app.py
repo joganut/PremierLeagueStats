@@ -143,7 +143,7 @@ def main():
     if option == "🏆 Team Stats":
         df = fetch_epl_data()
         if not df.empty:
-            st.markdown('<div class="subheader">EPL Table - 2024</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subheader">EPL Table</div>', unsafe_allow_html=True)
             search_term = st.text_input("🔍 Search the table", "")
             if search_term:
                 search_term = search_term.lower()
@@ -173,7 +173,7 @@ def main():
                         y='Goals For',
                         color='Team'
                     ).properties(
-                        title='📊 Goals Scored - 2024'
+                        title='📊 Goals Scored'
                     ).interactive()
                     st.altair_chart(goals_scored_chart, use_container_width=True)
 
@@ -182,14 +182,14 @@ def main():
                         y='Goals Against',
                         color='Team'
                     ).properties(
-                        title='📊 Goals Conceded - 2024'
+                        title='📊 Goals Conceded'
                     ).interactive()
                     st.altair_chart(goals_conceded_chart, use_container_width=True)
 
     elif option == "🎯 Player Stats":
         player_df = fetch_player_data()
         if not player_df.empty:
-            st.markdown('<div class="subheader">👤 Player Stats - 2024</div>', unsafe_allow_html=True)
+            st.markdown('<div class="subheader">👤 Player Stats </div>', unsafe_allow_html=True)
             st.dataframe(player_df, use_container_width=True)
 
             if 'Goals' in player_df.columns:
