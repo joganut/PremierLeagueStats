@@ -5,6 +5,8 @@ import pandas as pd
 import altair as alt
 import logging
 
+st.set_page_config(layout="wide")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
