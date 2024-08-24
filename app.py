@@ -56,7 +56,7 @@ def add_custom_css():
         </style>
     """, unsafe_allow_html=True)
 
-@st.cache_data
+
 def fetch_epl_data():
     url = "https://www.bbc.com/sport/football/premier-league/table"
     try:
