@@ -86,7 +86,7 @@ def fetch_epl_data():
     df = pd.DataFrame(table_data, columns=headers)
     return df.iloc[:, :-1] if not df.empty else df  # Remove the last column if data exists
 
-@st.cache_data
+
 def fetch_player_data():
     url = "https://www.bbc.com/sport/football/premier-league/top-scorers"
     try:
